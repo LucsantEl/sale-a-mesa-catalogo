@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sale a Mesa — Catálogo de Juegos</title>
+<style>
+  :root {
+    --brown: #5b2d8e;
+    --cream: #f7efd9;
+    --accent: #5b2d8e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--cream);
+    color: var(--brown);
+  }
+  header {
+    background: var(--brown);
+    color: var(--cream);
+    padding: 24px 16px;
+    text-align: center;
+  }
+  header h1 { margin: 0; font-size: 1.8rem; }
+  header p { margin: 8px 0 0; opacity: 0.8; font-size: 0.95rem; }
+  header .logo { max-width: 180px; width: 100%; height: auto; }
+  .controls {
+    max-width: 900px;
+    margin: 16px auto;
+    padding: 0 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .controls input, .controls select {
+    flex: 1;
+    min-width: 140px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  .grid {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-img {
+    height: 130px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .card-body { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .card-body h3 { margin: 0; font-size: 1.1rem; }
+  .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    background: var(--cream);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 999px;
+    width: fit-content;
+  }
+  .meta { font-size: 0.85rem; color: #555; }
+  .resena { font-size: 0.85rem; color: #444; margin: 6px 0 0; line-height: 1.35; }
+  .empty { text-align: center; padding: 40px; color: #888; }
+  .pagination {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 0 16px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pagination button {
+    border: 1px solid var(--accent);
+    background: white;
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .pagination button.active {
+    background: var(--accent);
+    color: white;
+  }
+  .pagination button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  footer { text-align: center; padding: 16px; font-size: 0.8rem; color: #888; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="Sale a Mesa" class="logo">
+  <p>Catálogo de juegos de mesa</p>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Buscar juego...">
+  <select id="categoria">
+    <option value="">Todas las categorías</option>
+  </select>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none;">No se encontraron juegos.</div>
+<div class="pagination" id="pagination"></div>
+
+<footer>Sale a Mesa · Cafetería de especialidad y juegos de mesa</footer>
+
+<script src="games.js"></script>
+<script>
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  const searchInput = document.getElementById('search');
+  const categoriaSelect = document.getElementById('categoria');
+
+  const categorias = [...new Set(GAMES.map(g => g.categoria))].sort();
+  categorias.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    categoriaSelect.appendChild(opt);
+  });
+
+  const PAGE_SIZE = 10;
+  let currentPage = 1;
+  const pagination = document.getElementById('pagination');
+
+  function getFiltered() {
+    const term = searchInput.value.trim().toLowerCase();
+    const cat = categoriaSelect.value;
+    return GAMES.filter(g => {
+      const matchesTerm = g.nombre.toLowerCase().includes(term);
+      const matchesCat = !cat || g.categoria === cat;
+      return matchesTerm && matchesCat;
+    });
+  }
+
+  function renderPagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    pagination.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const addBtn = (label, page, disabled, active) => {
+      const btn = document.createElement('button');
+      btn.textContent = label;
+      btn.disabled = disabled;
+      if (active) btn.classList.add('active');
+      btn.addEventListener('click', () => { currentPage = page; render(); window.scrollTo({top:0, behavior:'smooth'}); });
+      pagination.appendChild(btn);
+    };
+
+    addBtn('«', currentPage - 1, currentPage === 1, false);
+    for (let p = 1; p <= totalPages; p++) {
+      addBtn(String(p), p, false, p === currentPage);
+    }
+    addBtn('»', currentPage + 1, currentPage === totalPages, false);
+  }
+
+  function render() {
+    const filtered = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+    grid.innerHTML = '';
+    empty.style.display = filtered.length ? 'none' : 'block';
+
+    pageItems.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-img">${g.imagen ? `<img src="${g.imagen}" alt="${g.nombre}" onerror="this.parentElement.innerHTML='🎲'">` : '🎲'}</div>
+        <div class="card-body">
+          <h3>${g.nombre}</h3>
+          <span class="tag">${g.categoria}</span>
+          <div class="meta">👥 ${g.jugadores} jugadores</div>
+          <div class="meta">⏱ ${g.tiempo}</div>
+          <div class="meta">📊 Dificultad: ${g.dificultad}</div>
+          ${g.resena ? `<p class="resena">${g.resena}</p>` : ''}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    renderPagination(filtered.length);
+  }
+
+  searchInput.addEventListener('input', () => { currentPage = 1; render(); });
+  categoriaSelect.addEventListener('change', () => { currentPage = 1; render(); });
+  render();
+</script>
+
+</body>
+</html>
