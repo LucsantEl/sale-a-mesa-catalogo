@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sale a Mesa — Catálogo de Juegos</title>
+<style>
+  :root {
+    --brown: #5b2d8e;
+    --cream: #f7efd9;
+    --accent: #5b2d8e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--cream);
+    color: var(--brown);
+  }
+  header {
+    background: var(--brown);
+    color: var(--cream);
+    padding: 24px 16px;
+    text-align: center;
+  }
+  header h1 { margin: 0; font-size: 1.8rem; }
+  header p { margin: 8px 0 0; opacity: 0.8; font-size: 0.95rem; }
+  header .logo { max-width: 180px; width: 100%; height: auto; }
+  .controls {
+    max-width: 900px;
+    margin: 16px auto;
+    padding: 0 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .controls input, .controls select {
+    flex: 1;
+    min-width: 140px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  .grid {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-img {
+    height: 130px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .card-body { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .card-body h3 { margin: 0; font-size: 1.1rem; }
+  .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    background: var(--cream);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 999px;
+    width: fit-content;
+  }
+  .meta { font-size: 0.85rem; color: #555; }
+  .resena { font-size: 0.85rem; color: #444; margin: 6px 0 0; line-height: 1.35; }
+  .empty { text-align: center; padding: 40px; color: #888; }
+  .pagination {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 0 16px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pagination button {
+    border: 1px solid var(--accent);
+    background: white;
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .pagination button.active {
+    background: var(--accent);
+    color: white;
+  }
+  .pagination button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  footer { text-align: center; padding: 16px; font-size: 0.8rem; color: #888; }
+
+  .reserve-btn {
+    margin-top: 4px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .reserve-btn:hover { background: #4a2473; }
+
+  .scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 15, 45, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 20;
+  }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+
+  .panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: min(380px, 92vw);
+    background: white;
+    box-shadow: -16px 0 32px rgba(0,0,0,0.15);
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    z-index: 21;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel.open { transform: translateX(0); }
+
+  #formView {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .panel-head {
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-head h3 { margin: 0; font-size: 1.05rem; color: var(--brown); }
+  .panel-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .panel-body { padding: 20px; overflow-y: auto; flex: 1; min-height: 0; }
+  .panel-body label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin: 16px 0 6px;
+  }
+  .panel-body label:first-of-type { margin-top: 0; }
+  .panel-body input, .panel-body textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    font-size: 0.92rem;
+  }
+  .party-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .party-row button {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: var(--cream);
+    color: var(--brown);
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .party-row span { font-weight: 700; min-width: 1.5ch; text-align: center; }
+
+  .panel-foot { padding: 16px 20px; border-top: 1px solid #eee; }
+  .confirm-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .confirm-btn:hover { background: #4a2473; }
+  .confirm-btn:disabled { opacity: 0.6; cursor: default; }
+  .form-error { color: #c0392b; font-size: 0.82rem; margin-top: 8px; text-align: center; }
+
+  .success-view { display: none; text-align: center; padding: 36px 24px; }
+  .success-view.show { display: block; }
+  .success-view .token {
+    width: 56px; height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+  }
+  .success-view h3 { color: var(--brown); margin: 0 0 8px; }
+  .success-view p { color: #666; font-size: 0.88rem; line-height: 1.5; }
+  .ticket {
+    margin-top: 18px;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    text-align: left;
+    color: #333;
+  }
+  .ticket b { color: var(--brown); }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="Sale a Mesa" class="logo">
+  <p>Catálogo de juegos de mesa</p>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Buscar juego...">
+  <select id="categoria">
+    <option value="">Todas las categorías</option>
+  </select>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none;">No se encontraron juegos.</div>
+<div class="pagination" id="pagination"></div>
+
+<footer>Sale a Mesa · Cafetería de especialidad y juegos de mesa</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel">
+  <div class="panel-head">
+    <h3 id="panelTitle">Reservar juego</h3>
+    <button class="panel-close" id="panelClose" aria-label="Cerrar">×</button>
+  </div>
+
+  <div id="formView">
+    <div class="panel-body">
+      <label for="resFecha">Fecha</label>
+      <input id="resFecha" type="date">
+
+      <label for="resHora">Hora de llegada</label>
+      <input id="resHora" type="time">
+
+      <label>¿Cuántas personas?</label>
+      <div class="party-row">
+        <button type="button" id="partyMinus" aria-label="Menos">−</button>
+        <span id="partyCount">2</span>
+        <button type="button" id="partyPlus" aria-label="Más">+</button>
+      </div>
+
+      <label for="resNombre">Tu nombre</label>
+      <input id="resNombre" type="text" placeholder="Nombre y apellido">
+
+      <label for="resCelular">Celular</label>
+      <input id="resCelular" type="tel" placeholder="09xx xxx xxx">
+
+      <label for="resNotas">Notas (opcional)</label>
+      <textarea id="resNotas" rows="2" placeholder="Alguna aclaración para el staff..."></textarea>
+
+      <div class="form-error" id="formError"></div>
+    </div>
+    <div class="panel-foot">
+      <button class="confirm-btn" id="confirmBtn">Confirmar reserva</button>
+    </div>
+  </div>
+
+  <div class="success-view" id="successView">
+    <div class="token">🎲</div>
+    <h3>¡Reserva enviada!</h3>
+    <p>El equipo de Sale a Mesa confirma la disponibilidad y te contacta si algo cambia.</p>
+    <div class="ticket">
+      <div><b>Juego:</b> <span id="tJuego"></span></div>
+      <div><b>Fecha:</b> <span id="tFecha"></span></div>
+      <div><b>Hora:</b> <span id="tHora"></span></div>
+      <div><b>Personas:</b> <span id="tPersonas"></span></div>
+    </div>
+  </div>
+</aside>
+
+<script src="games.js"></script>
+<script>
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  const searchInput = document.getElementById('search');
+  const categoriaSelect = document.getElementById('categoria');
+
+  const categorias = [...new Set(GAMES.map(g => g.categoria))].sort();
+  categorias.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    categoriaSelect.appendChild(opt);
+  });
+
+  const PAGE_SIZE = 10;
+  let currentPage = 1;
+  const pagination = document.getElementById('pagination');
+
+  function getFiltered() {
+    const term = searchInput.value.trim().toLowerCase();
+    const cat = categoriaSelect.value;
+    return GAMES.filter(g => {
+      const matchesTerm = g.nombre.toLowerCase().includes(term);
+      const matchesCat = !cat || g.categoria === cat;
+      return matchesTerm && matchesCat;
+    });
+  }
+
+  function renderPagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    pagination.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const addBtn = (label, page, disabled, active) => {
+      const btn = document.createElement('button');
+      btn.textContent = label;
+      btn.disabled = disabled;
+      if (active) btn.classList.add('active');
+      btn.addEventListener('click', () => { currentPage = page; render(); window.scrollTo({top:0, behavior:'smooth'}); });
+      pagination.appendChild(btn);
+    };
+
+    addBtn('«', currentPage - 1, currentPage === 1, false);
+    for (let p = 1; p <= totalPages; p++) {
+      addBtn(String(p), p, false, p === currentPage);
+    }
+    addBtn('»', currentPage + 1, currentPage === totalPages, false);
+  }
+
+  function render() {
+    const filtered = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+    grid.innerHTML = '';
+    empty.style.display = filtered.length ? 'none' : 'block';
+
+    pageItems.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-img">${g.imagen ? `<img src="${g.imagen}" alt="${g.nombre}" onerror="this.parentElement.innerHTML='🎲'">` : '🎲'}</div>
+        <div class="card-body">
+          <h3>${g.nombre}</h3>
+          <span class="tag">${g.categoria}</span>
+          <div class="meta">👥 ${g.jugadores} jugadores</div>
+          <div class="meta">⏱ ${g.tiempo}</div>
+          <div class="meta">📊 Dificultad: ${g.dificultad}</div>
+          ${g.resena ? `<p class="resena">${g.resena}</p>` : ''}
+          <button class="reserve-btn" data-juego="${g.nombre}">Reservar este juego</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    renderPagination(filtered.length);
+  }
+
+  searchInput.addEventListener('input', () => { currentPage = 1; render(); });
+  categoriaSelect.addEventListener('change', () => { currentPage = 1; render(); });
+  render();
+
+  // ---------- Reservas ----------
+  const scrim = document.getElementById('scrim');
+  const panel = document.getElementById('panel');
+  const panelTitle = document.getElementById('panelTitle');
+  const formView = document.getElementById('formView');
+  const successView = document.getElementById('successView');
+  const formError = document.getElementById('formError');
+  const confirmBtn = document.getElementById('confirmBtn');
+
+  const resFecha = document.getElementById('resFecha');
+  const resHora = document.getElementById('resHora');
+  const resNombre = document.getElementById('resNombre');
+  const resCelular = document.getElementById('resCelular');
+  const resNotas = document.getElementById('resNotas');
+  const partyCount = document.getElementById('partyCount');
+
+  let party = 2;
+  let currentJuego = '';
+
+  const todayISO = () => new Date().toISOString().slice(0, 10);
+
+  function openPanel(juego) {
+    currentJuego = juego;
+    panelTitle.textContent = `Reservar "${juego}"`;
+    resFecha.value = todayISO();
+    resFecha.min = todayISO();
+    resHora.value = '';
+    resNombre.value = '';
+    resCelular.value = '';
+    resNotas.value = '';
+    party = 2;
+    partyCount.textContent = party;
+    formError.textContent = '';
+    formView.style.display = 'flex';
+    successView.classList.remove('show');
+    scrim.classList.add('open');
+    panel.classList.add('open');
+  }
+
+  function closePanel() {
+    scrim.classList.remove('open');
+    panel.classList.remove('open');
+  }
+
+  grid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.reserve-btn');
+    if (!btn) return;
+    openPanel(btn.dataset.juego);
+  });
+
+  scrim.addEventListener('click', closePanel);
+  document.getElementById('panelClose').addEventListener('click', closePanel);
+
+  document.getElementById('partyPlus').addEventListener('click', () => {
+    party = Math.min(party + 1, 12);
+    partyCount.textContent = party;
+  });
+  document.getElementById('partyMinus').addEventListener('click', () => {
+    party = Math.max(party - 1, 1);
+    partyCount.textContent = party;
+  });
+
+  confirmBtn.addEventListener('click', async () => {
+    formError.textContent = '';
+
+    if (!resFecha.value || !resHora.value || !resNombre.value.trim() || !resCelular.value.trim()) {
+      formError.textContent = 'Completa fecha, hora, nombre y celular.';
+      return;
+    }
+
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Enviando...';
+
+    try {
+      const res = await fetch('/api/reservas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: resNombre.value.trim(),
+          celular: resCelular.value.trim(),
+          juego: currentJuego,
+          fecha: resFecha.value,
+          hora: resHora.value,
+          personas: party,
+          notas: resNotas.value.trim() || null
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo enviar la reserva');
+
+      document.getElementById('tJuego').textContent = currentJuego;
+      document.getElementById('tFecha').textContent = resFecha.value;
+      document.getElementById('tHora').textContent = resHora.value;
+      document.getElementById('tPersonas').textContent = party + (party === 1 ? ' persona' : ' personas');
+      formView.style.display = 'none';
+      successView.classList.add('show');
+    } catch (err) {
+      formError.textContent = err.message;
+    } finally {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirmar reserva';
+    }
+  });
+</script>
+
+</body>
+</html>

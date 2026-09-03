@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reservas — Staff Sale a Mesa</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .card { text-align: left; }
+  h1 { text-align: center; }
+  #login { max-width: 320px; margin: 0 auto; }
+  #login button { width: 100%; }
+
+  .filter-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .filter-row > div { flex: 1; min-width: 160px; }
+  .filter-row label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 4px;
+  }
+  .filter-row input, .filter-row select { margin: 0; }
+  .filter-row button { margin: 0; white-space: nowrap; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #eee; vertical-align: top; }
+  th { color: #888; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .pill.pendiente { background: #fef3c7; color: #92400e; }
+  .pill.confirmada { background: #d1fae5; color: #047857; }
+  .pill.cancelada { background: #fee2e2; color: #b91c1c; }
+  .pill.completada { background: #e5e7eb; color: #374151; }
+
+  .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .row-actions button {
+    padding: 5px 9px;
+    margin: 0;
+    font-size: 0.72rem;
+    border-radius: 6px;
+  }
+  .row-actions button.secondary { background: #eee; color: #333; }
+  .row-actions button.danger { background: #c0392b; }
+
+  .empty { text-align: center; color: #888; padding: 24px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>📅 Reservas de la ludoteca</h1>
+
+  <div id="login">
+    <input type="password" id="password" placeholder="Contraseña de staff">
+    <button id="btnLogin">Entrar</button>
+  </div>
+
+  <div id="panel" style="display:none;">
+    <div class="filter-row">
+      <div>
+        <label for="filtroFecha">Fecha</label>
+        <input type="date" id="filtroFecha">
+      </div>
+      <button id="btnHoy" class="secondary">Hoy</button>
+      <button id="btnTodas" class="secondary">Próximas 100</button>
+    </div>
+
+    <div id="listado"></div>
+  </div>
+</div>
+
+<script>
+  let staffPassword = '';
+
+  document.getElementById('btnLogin').addEventListener('click', () => {
+    staffPassword = document.getElementById('password').value;
+    if (!staffPassword) return;
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    const hoy = new Date().toISOString().slice(0, 10);
+    document.getElementById('filtroFecha').value = hoy;
+    cargarReservas(hoy);
+  });
+
+  document.getElementById('btnHoy').addEventListener('click', () => {
+    const hoy = new Date().toISOString().slice(0, 10);
+    document.getElementById('filtroFecha').value = hoy;
+    cargarReservas(hoy);
+  });
+
+  document.getElementById('btnTodas').addEventListener('click', () => {
+    document.getElementById('filtroFecha').value = '';
+    cargarReservas(null);
+  });
+
+  document.getElementById('filtroFecha').addEventListener('change', (e) => {
+    cargarReservas(e.target.value || null);
+  });
+
+  function estadoLabel(estado) {
+    return { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelada: 'Cancelada', completada: 'Completada' }[estado] || estado;
+  }
+
+  async function cargarReservas(fecha) {
+    const listado = document.getElementById('listado');
+    listado.innerHTML = '<p class="msg">Cargando...</p>';
+
+    try {
+      const res = await fetch('/api/reservas/list', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: staffPassword, fecha })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al cargar reservas');
+
+      if (data.length === 0) {
+        listado.innerHTML = '<p class="empty">No hay reservas para mostrar.</p>';
+        return;
+      }
+
+      listado.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th><th>Cliente</th><th>Juego</th><th>Pers.</th><th>Estado</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.map(r => `
+              <tr data-id="${r.id}">
+                <td>${r.hora}${!fecha ? `<br><span style="color:#888;font-size:0.72rem;">${String(r.fecha).slice(0,10)}</span>` : ''}</td>
+                <td>${r.nombre}<br><span style="color:#888;font-size:0.75rem;">${r.celular}</span></td>
+                <td>${r.juego}${r.notas ? `<br><span style="color:#888;font-size:0.75rem;">${r.notas}</span>` : ''}</td>
+                <td>${r.personas}</td>
+                <td><span class="pill ${r.estado}">${estadoLabel(r.estado)}</span></td>
+                <td>
+                  <div class="row-actions">
+                    ${r.estado === 'pendiente' ? `<button class="accion" data-estado="confirmada">Confirmar</button>` : ''}
+                    ${r.estado !== 'cancelada' && r.estado !== 'completada' ? `<button class="accion secondary danger" data-estado="cancelada">Cancelar</button>` : ''}
+                    ${r.estado === 'confirmada' ? `<button class="accion secondary" data-estado="completada">Completar</button>` : ''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      listado.querySelectorAll('.accion').forEach(btn => {
+        btn.addEventListener('click', () => cambiarEstado(btn.closest('tr').dataset.id, btn.dataset.estado, fecha));
+      });
+    } catch (e) {
+      listado.innerHTML = `<p class="msg error">${e.message}</p>`;
+    }
+  }
+
+  async function cambiarEstado(id, estado, fecha) {
+    try {
+      const res = await fetch(`/api/reservas/${id}/estado`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: staffPassword, estado })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al actualizar');
+      cargarReservas(fecha);
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+</script>
+</body>
+</html>
