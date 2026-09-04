@@ -114,6 +114,10 @@
     return { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelada: 'Cancelada', completada: 'Completada' }[estado] || estado;
   }
 
+  function mesaLabel(mesa) {
+    return { general: 'General', vip1: 'VIP 1', vip2: 'VIP 2' }[mesa] || mesa;
+  }
+
   async function cargarReservas(fecha) {
     const listado = document.getElementById('listado');
     listado.innerHTML = '<p class="msg">Cargando...</p>';
@@ -136,7 +140,7 @@
         <table>
           <thead>
             <tr>
-              <th>Hora</th><th>Cliente</th><th>Juego</th><th>Pers.</th><th>Estado</th><th></th>
+              <th>Hora</th><th>Cliente</th><th>Juego</th><th>Mesa</th><th>Pers.</th><th>Estado</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -145,6 +149,7 @@
                 <td>${r.hora}${!fecha ? `<br><span style="color:#888;font-size:0.72rem;">${String(r.fecha).slice(0,10)}</span>` : ''}</td>
                 <td>${r.nombre}<br><span style="color:#888;font-size:0.75rem;">${r.celular}</span></td>
                 <td>${r.juego}${r.notas ? `<br><span style="color:#888;font-size:0.75rem;">${r.notas}</span>` : ''}</td>
+                <td>${mesaLabel(r.mesa)}</td>
                 <td>${r.personas}</td>
                 <td><span class="pill ${r.estado}">${estadoLabel(r.estado)}</span></td>
                 <td>

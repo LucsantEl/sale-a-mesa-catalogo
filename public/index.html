@@ -209,6 +209,7 @@
     cursor: pointer;
   }
   .party-row span { font-weight: 700; min-width: 1.5ch; text-align: center; }
+  .party-hint { margin: 6px 0 0; font-size: 0.78rem; color: #888; min-height: 1em; }
 
   .panel-foot { padding: 16px 20px; border-top: 1px solid #eee; }
   .confirm-btn {
@@ -285,12 +286,20 @@
       <label for="resHora">Hora de llegada</label>
       <input id="resHora" type="time">
 
+      <label for="resMesa">Mesa</label>
+      <select id="resMesa">
+        <option value="general">Mesa general</option>
+        <option value="vip1">VIP 1 (6 a 10 personas)</option>
+        <option value="vip2">VIP 2 (2 a 4 personas)</option>
+      </select>
+
       <label>¿Cuántas personas?</label>
       <div class="party-row">
         <button type="button" id="partyMinus" aria-label="Menos">−</button>
         <span id="partyCount">2</span>
         <button type="button" id="partyPlus" aria-label="Más">+</button>
       </div>
+      <p class="party-hint" id="partyHint"></p>
 
       <label for="resNombre">Tu nombre</label>
       <input id="resNombre" type="text" placeholder="Nombre y apellido">
@@ -314,6 +323,7 @@
     <p>El equipo de Sale a Mesa confirma la disponibilidad y te contacta si algo cambia.</p>
     <div class="ticket">
       <div><b>Juego:</b> <span id="tJuego"></span></div>
+      <div><b>Mesa:</b> <span id="tMesa"></span></div>
       <div><b>Fecha:</b> <span id="tFecha"></span></div>
       <div><b>Hora:</b> <span id="tHora"></span></div>
       <div><b>Personas:</b> <span id="tPersonas"></span></div>
@@ -418,15 +428,32 @@
 
   const resFecha = document.getElementById('resFecha');
   const resHora = document.getElementById('resHora');
+  const resMesa = document.getElementById('resMesa');
   const resNombre = document.getElementById('resNombre');
   const resCelular = document.getElementById('resCelular');
   const resNotas = document.getElementById('resNotas');
   const partyCount = document.getElementById('partyCount');
+  const partyHint = document.getElementById('partyHint');
+
+  const MESAS = {
+    general: { label: 'Mesa general', min: 1, max: 12 },
+    vip1: { label: 'VIP 1', min: 6, max: 10 },
+    vip2: { label: 'VIP 2', min: 2, max: 4 }
+  };
 
   let party = 2;
   let currentJuego = '';
 
   const todayISO = () => new Date().toISOString().slice(0, 10);
+
+  function updatePartyBounds() {
+    const { min, max } = MESAS[resMesa.value];
+    party = Math.min(Math.max(party, min), max);
+    partyCount.textContent = party;
+    partyHint.textContent = `Esta mesa admite de ${min} a ${max} personas.`;
+  }
+
+  resMesa.addEventListener('change', updatePartyBounds);
 
   function openPanel(juego) {
     currentJuego = juego;
@@ -434,11 +461,12 @@
     resFecha.value = todayISO();
     resFecha.min = todayISO();
     resHora.value = '';
+    resMesa.value = 'general';
     resNombre.value = '';
     resCelular.value = '';
     resNotas.value = '';
     party = 2;
-    partyCount.textContent = party;
+    updatePartyBounds();
     formError.textContent = '';
     formView.style.display = 'flex';
     successView.classList.remove('show');
@@ -461,11 +489,11 @@
   document.getElementById('panelClose').addEventListener('click', closePanel);
 
   document.getElementById('partyPlus').addEventListener('click', () => {
-    party = Math.min(party + 1, 12);
+    party = Math.min(party + 1, MESAS[resMesa.value].max);
     partyCount.textContent = party;
   });
   document.getElementById('partyMinus').addEventListener('click', () => {
-    party = Math.max(party - 1, 1);
+    party = Math.max(party - 1, MESAS[resMesa.value].min);
     partyCount.textContent = party;
   });
 
@@ -488,6 +516,7 @@
           nombre: resNombre.value.trim(),
           celular: resCelular.value.trim(),
           juego: currentJuego,
+          mesa: resMesa.value,
           fecha: resFecha.value,
           hora: resHora.value,
           personas: party,
@@ -498,6 +527,7 @@
       if (!res.ok) throw new Error(data.error || 'No se pudo enviar la reserva');
 
       document.getElementById('tJuego').textContent = currentJuego;
+      document.getElementById('tMesa').textContent = MESAS[resMesa.value].label;
       document.getElementById('tFecha').textContent = resFecha.value;
       document.getElementById('tHora').textContent = resHora.value;
       document.getElementById('tPersonas').textContent = party + (party === 1 ? ' persona' : ' personas');

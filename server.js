@@ -6,6 +6,11 @@ const { Pool } = require('pg');
 const STAFF_PASSWORD = process.env.STAFF_PASSWORD || 'saleamesa2026';
 const PORT = process.env.PORT || 3000;
 const ESTADOS_VALIDOS = ['pendiente', 'confirmada', 'cancelada', 'completada'];
+const MESAS = {
+  general: { min: 1, max: 12 },
+  vip1: { min: 6, max: 10 },
+  vip2: { min: 2, max: 4 }
+};
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -26,6 +31,7 @@ async function initDb() {
       notas TEXT,
       creado TIMESTAMP NOT NULL DEFAULT NOW()
     );
+    ALTER TABLE reservas ADD COLUMN IF NOT EXISTS mesa TEXT NOT NULL DEFAULT 'general';
   `);
 }
 
@@ -43,20 +49,22 @@ function requireStaff(req, res, next) {
 // Cliente: crear una reserva
 app.post('/api/reservas', async (req, res) => {
   const { nombre, celular, juego, fecha, hora, notas } = req.body;
-  let { personas } = req.body;
+  let { personas, mesa } = req.body;
 
   if (!nombre || !celular || !juego || !fecha || !hora) {
     return res.status(400).json({ error: 'Faltan datos de la reserva' });
   }
 
-  personas = Number(personas) || 2;
-  personas = Math.min(Math.max(personas, 1), 12);
+  if (!MESAS[mesa]) mesa = 'general';
+  const { min, max } = MESAS[mesa];
+  personas = Number(personas) || min;
+  personas = Math.min(Math.max(personas, min), max);
 
   const id = crypto.randomBytes(6).toString('hex');
   await pool.query(
-    `INSERT INTO reservas (id, nombre, celular, juego, fecha, hora, personas, notas)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [id, nombre, celular, juego, fecha, hora, personas, notas || null]
+    `INSERT INTO reservas (id, nombre, celular, juego, mesa, fecha, hora, personas, notas)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    [id, nombre, celular, juego, mesa, fecha, hora, personas, notas || null]
   );
 
   res.json({ id });
