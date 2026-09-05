@@ -1,6 +1,8 @@
 // Catálogo de juegos — agrega o edita juegos aquí.
 // Copia un bloque { ... } y cambia los datos para sumar un juego nuevo.
 const GAMES = [
+  { nombre: "Saboteur", jugadores: "3-10", tiempo: "30 min", categoria: "Social/Deducción", dificultad: "Baja", imagen: "images/saboteur.png", resena: "Mineros enanos cavan túneles hacia el oro mientras saboteadores secretos intentan arruinar la excavación. Roles ocultos, cartas de acción y mucha desconfianza en la mesa." },
+  { nombre: "Spooky Stairs (La Escalera Encantada)", jugadores: "2-4", tiempo: "15-20 min", categoria: "Familiar/Destreza", dificultad: "Baja", imagen: "images/escalera-encantada.png", resena: "Sube la escalera embrujada apilando peldaños de madera sin despertar al fantasma. Ligero, rápido y perfecto para jugar con niños." },
   { nombre: "Secret Hitler", jugadores: "5-10", tiempo: "30-45 min", categoria: "Social/Deducción", dificultad: "Media", imagen: "images/secret-hitler.png", resena: "Juego de roles secretos donde liberales y fascistas se enfrentan por el control del gobierno. Tensión, mentiras y alianzas inestables en cada partida." },
   { nombre: "Golpe de Fe", jugadores: "1-4", tiempo: "30-45 min", categoria: "Estrategia", dificultad: "Baja", imagen: "images/golpe-de-fe.png", resena: "Envía tus profetas a la tierra para tener posicionamiento en cada una de las cuatro islas y luego lucha por tener mayoría." },
   { nombre: "El Bucle", jugadores: "2-4", tiempo: "45-60 min", categoria: "Cooperativo/Ciencia ficción", dificultad: "Media", imagen: "images/el-bucle.png", resena: "Robots viajeros en el tiempo deben resolver acertijos cooperativos atrapados en un bucle temporal. Ideal para jugar en equipo contra el reloj." },
