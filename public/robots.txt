@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /staff
+
+Sitemap: https://sale-a-mesa-catalogo.vercel.app/sitemap.xml
