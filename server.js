@@ -3,7 +3,10 @@ const path = require('path');
 const crypto = require('crypto');
 const { Pool } = require('pg');
 
-const STAFF_PASSWORD = process.env.STAFF_PASSWORD || 'saleamesa2026';
+const STAFF_PASSWORD = process.env.STAFF_PASSWORD;
+if (!STAFF_PASSWORD) {
+  throw new Error('Falta la variable de entorno STAFF_PASSWORD');
+}
 const PORT = process.env.PORT || 3000;
 const ESTADOS_VALIDOS = ['pendiente', 'confirmada', 'cancelada', 'completada'];
 const MESAS = {
