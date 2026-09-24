@@ -42,6 +42,15 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Envuelve un handler async: si la promesa rechaza (p.ej. Postgres rechaza
+// una fecha mal formada), lo pasa al middleware de errores en vez de quedar
+// como una promesa sin capturar (eso colgaba o hacía fallar la función sin
+// dar ninguna respuesta clara al cliente).
+const ah = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+
+const FECHA_RE = /^\d{4}-\d{2}-\d{2}$/;
+const HORA_RE = /^\d{2}:\d{2}$/;
+
 function requireStaff(req, res, next) {
   if (req.body.password !== STAFF_PASSWORD) {
     return res.status(401).json({ error: 'Contraseña de staff incorrecta' });
@@ -50,12 +59,21 @@ function requireStaff(req, res, next) {
 }
 
 // Cliente: crear una reserva
-app.post('/api/reservas', async (req, res) => {
+app.post('/api/reservas', ah(async (req, res) => {
   const { nombre, celular, juego, fecha, hora, notas } = req.body;
   let { personas, mesa } = req.body;
 
   if (!nombre || !celular || !juego || !fecha || !hora) {
     return res.status(400).json({ error: 'Faltan datos de la reserva' });
+  }
+  if (String(celular).replace(/\D/g, '').length < 7) {
+    return res.status(400).json({ error: 'El celular no es válido' });
+  }
+  if (!FECHA_RE.test(fecha)) {
+    return res.status(400).json({ error: 'La fecha no es válida' });
+  }
+  if (!HORA_RE.test(hora)) {
+    return res.status(400).json({ error: 'La hora no es válida' });
   }
 
   if (!MESAS[mesa]) mesa = 'general';
@@ -71,10 +89,10 @@ app.post('/api/reservas', async (req, res) => {
   );
 
   res.json({ id });
-});
+}));
 
 // Staff: listar reservas (opcionalmente filtradas por fecha)
-app.post('/api/reservas/list', requireStaff, async (req, res) => {
+app.post('/api/reservas/list', requireStaff, ah(async (req, res) => {
   const { fecha } = req.body;
   const result = fecha
     ? await pool.query('SELECT * FROM reservas WHERE fecha = $1 ORDER BY hora', [fecha])
@@ -83,10 +101,10 @@ app.post('/api/reservas/list', requireStaff, async (req, res) => {
          ORDER BY fecha, hora LIMIT 100`
       );
   res.json(result.rows);
-});
+}));
 
 // Staff: cambiar el estado de una reserva
-app.post('/api/reservas/:id/estado', requireStaff, async (req, res) => {
+app.post('/api/reservas/:id/estado', requireStaff, ah(async (req, res) => {
   const { estado } = req.body;
   if (!ESTADOS_VALIDOS.includes(estado)) {
     return res.status(400).json({ error: 'Estado inválido' });
@@ -98,6 +116,11 @@ app.post('/api/reservas/:id/estado', requireStaff, async (req, res) => {
   );
   if (result.rows.length === 0) return res.status(404).json({ error: 'Reserva no encontrada' });
   res.json(result.rows[0]);
+}));
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Error del servidor, intenta de nuevo' });
 });
 
 // En modo local levanta el servidor; en Vercel exporta el handler serverless
