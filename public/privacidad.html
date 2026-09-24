@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidad — Sale a Mesa</title>
+<style>
+  :root {
+    --brown: #5b2d8e;
+    --cream: #f7efd9;
+    --accent: #5b2d8e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--cream);
+    color: #333;
+  }
+  .wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 16px 60px;
+  }
+  a.brand {
+    color: var(--brown);
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-decoration: none;
+  }
+  .card {
+    margin-top: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 28px 26px;
+  }
+  h1 { color: var(--brown); font-size: 1.35rem; margin: 0 0 4px; }
+  .updated { font-size: 0.78rem; color: #999; margin: 0 0 20px; }
+  h2 { color: var(--brown); font-size: 1rem; margin: 22px 0 6px; }
+  p, li { font-size: 0.92rem; line-height: 1.55; }
+  ul { padding-left: 20px; margin: 6px 0; }
+  footer { text-align: center; padding: 16px; font-size: 0.8rem; color: #888; }
+  footer a { color: #888; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="/">Sale a Mesa</a>
+  <div class="card">
+    <h1>Política de Privacidad</h1>
+    <p class="updated">Última actualización: 24 de septiembre de 2026</p>
+
+    <p>
+      Este sitio (catálogo de juegos y reservas de Sale a Mesa) lo usan clientes para
+      reservar mesa y juego, y el personal de Sale a Mesa para administrar esas reservas.
+    </p>
+
+    <h2>Qué datos guardamos</h2>
+    <p>Cuando hacés una reserva, guardamos:</p>
+    <ul>
+      <li>Tu nombre y número de celular.</li>
+      <li>El juego, la mesa, la fecha, la hora y la cantidad de personas.</li>
+      <li>Notas opcionales que agregues al reservar.</li>
+      <li>El estado de tu reserva (pendiente, confirmada, cancelada o completada).</li>
+    </ul>
+
+    <h2>Para qué los usamos</h2>
+    <p>
+      Únicamente para gestionar tu reserva: confirmarte disponibilidad, contactarte si algo
+      cambia y organizar las mesas del local. No usamos tu celular para enviarte publicidad ni
+      lo compartimos con terceros, y no lo vendemos.
+    </p>
+
+    <h2>Quién puede ver esta información</h2>
+    <p>
+      Solo el personal de Sale a Mesa, a través de un panel interno protegido con contraseña.
+      No es información pública ni visible para otros clientes.
+    </p>
+
+    <h2>Dónde se guarda</h2>
+    <p>
+      Los datos se almacenan en una base de datos Postgres (Neon) y el sitio se sirve desde
+      Vercel, ambos proveedores de infraestructura con sus propias medidas de seguridad.
+    </p>
+
+    <h2>Cuánto tiempo se conserva</h2>
+    <p>
+      Guardamos el historial de reservas como registro operativo del negocio. Si querés que
+      eliminemos tus datos de una reserva ya pasada, escribinos y lo hacemos.
+    </p>
+
+    <h2>Tus derechos</h2>
+    <p>
+      Podés pedirnos en cualquier momento que te digamos qué datos tenemos tuyos, que los
+      corrijamos o que los eliminemos, escribiéndonos por WhatsApp al
+      <a href="https://wa.me/593962772734" style="color:var(--brown);font-weight:600;">+593 96 277 2734</a>.
+    </p>
+  </div>
+</div>
+<footer><a href="/">Volver al catálogo</a></footer>
+</body>
+</html>
