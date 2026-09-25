@@ -60,6 +60,32 @@
   .row-actions button.danger { background: #c0392b; }
 
   .empty { text-align: center; color: #666; padding: 24px; }
+
+  .aviso {
+    display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    background: #5b2d8e; color: #f7efd9; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px;
+    font-weight: 700; font-size: 0.9rem;
+  }
+  .aviso.show { display: flex; }
+  .aviso button { margin: 0; background: #f7efd9; color: #5b2d8e; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; }
+  .toast {
+    position: fixed; right: 16px; bottom: 16px; z-index: 50; max-width: min(340px, 90vw);
+    background: #5b2d8e; color: #f7efd9; padding: 12px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 700;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25); display: none;
+  }
+  .toast.show { display: block; }
+  .food { margin: 0; padding: 0; list-style: none; font-size: 0.78rem; color: #333; }
+  .food li { margin-bottom: 2px; }
+  .food b { color: #5b2d8e; }
+  .badge-food { display: inline-block; background: #5b2d8e; color: #f7efd9; border-radius: 999px; padding: 1px 8px; font-size: 0.68rem; font-weight: 700; margin-left: 4px; }
+  .pill.enviado { background: #d1fae5; color: #047857; }
+  dialog { border: none; border-radius: 12px; padding: 20px; max-width: min(360px, 92vw); }
+  dialog::backdrop { background: rgba(30, 15, 45, 0.45); }
+  dialog h3 { margin: 0 0 6px; }
+  dialog p { margin: 0 0 12px; font-size: 0.85rem; color: #555; }
+  dialog select { width: 100%; margin-bottom: 12px; }
+  dialog .row-actions button { flex: 1; padding: 9px; font-size: 0.85rem; }
+  .dlg-error { color: #c0392b; font-size: 0.82rem; min-height: 1.2em; margin: 0 0 8px; }
 </style>
 </head>
 <body>
@@ -81,9 +107,28 @@
       <button id="btnTodas" class="secondary">Próximas 100</button>
     </div>
 
+    <div class="aviso" id="aviso" role="status">
+      <span id="avisoTexto"></span>
+      <button id="btnVerPedidos" type="button">Ver próximas reservas</button>
+    </div>
+
     <div id="listado"></div>
   </div>
 </div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="dlgEnviar">
+  <h3>Enviar a cafeteria-control</h3>
+  <p id="dlgResumen"></p>
+  <label for="dlgMesa" style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:#666;">Mesa</label>
+  <select id="dlgMesa"></select>
+  <div class="dlg-error" id="dlgError"></div>
+  <div class="row-actions">
+    <button type="button" class="secondary" id="dlgCancelar">Cancelar</button>
+    <button type="button" id="dlgConfirmar">Enviar pedido</button>
+  </div>
+</dialog>
 
 <footer style="text-align:center;padding:16px;font-size:0.8rem;color:#666;">
   <a href="/privacidad" style="color:#666;text-decoration:underline;">Política de Privacidad</a>
@@ -93,6 +138,8 @@
 
 <script>
   let staffPassword = '';
+  const TITULO = document.title;
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   document.getElementById('btnLogin').addEventListener('click', () => {
     staffPassword = document.getElementById('password').value;
@@ -102,6 +149,7 @@
     const hoy = new Date().toISOString().slice(0, 10);
     document.getElementById('filtroFecha').value = hoy;
     cargarReservas(hoy);
+    iniciarAvisos();
   });
 
   document.getElementById('btnHoy').addEventListener('click', () => {
@@ -121,6 +169,19 @@
 
   function estadoLabel(estado) {
     return { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelada: 'Cancelada', completada: 'Completada' }[estado] || estado;
+  }
+
+  function comidaHtml(r) {
+    if (!r.pedido) return '';
+    const lista = r.pedido.map((p, i) => {
+      const quien = 'P' + (i + 1) + (p.nombre ? ' ' + esc(p.nombre) : '');
+      const pocion = esc(p.pocion.variante ? 'Poción ' + p.pocion.variante + ' (limonada)' : p.pocion.nombre);
+      return '<li><b>' + quien + ':</b> ' + pocion + ' + ' + esc(p.botin.nombre) + '</li>';
+    }).join('');
+    const accion = r.pedido_enviado_at
+      ? '<span class="pill enviado">Enviado a ' + esc(r.pedido_enviado_a || 'cafeteria-control') + '</span>'
+      : (r.estado !== 'cancelada' ? '<div class="row-actions" style="margin-top:4px"><button class="enviar" data-id="' + esc(r.id) + '">Enviar a cafeteria-control</button></div>' : '');
+    return '<ul class="food">' + lista + '</ul>' + accion;
   }
 
   function mesaLabel(mesa) {
@@ -149,17 +210,18 @@
         <table>
           <thead>
             <tr>
-              <th>Hora</th><th>Cliente</th><th>Juego</th><th>Mesa</th><th>Pers.</th><th>Estado</th><th></th>
+              <th>Hora</th><th>Cliente</th><th>Juego</th><th>Mesa</th><th>Pers.</th><th>Comida</th><th>Estado</th><th></th>
             </tr>
           </thead>
           <tbody>
             ${data.map(r => `
               <tr data-id="${r.id}">
-                <td>${r.hora}${!fecha ? `<br><span style="color:#666;font-size:0.72rem;">${String(r.fecha).slice(0,10)}</span>` : ''}</td>
-                <td>${r.nombre}<br><span style="color:#666;font-size:0.75rem;">${r.celular}</span></td>
-                <td>${r.juego}${r.notas ? `<br><span style="color:#666;font-size:0.75rem;">${r.notas}</span>` : ''}</td>
-                <td>${mesaLabel(r.mesa)}</td>
-                <td>${r.personas}</td>
+                <td>${esc(r.hora)}${!fecha ? `<br><span style="color:#666;font-size:0.72rem;">${esc(String(r.fecha).slice(0,10))}</span>` : ''}</td>
+                <td>${esc(r.nombre)}<br><span style="color:#666;font-size:0.75rem;">${esc(r.celular)}</span></td>
+                <td>${esc(r.juego)}${r.notas ? `<br><span style="color:#666;font-size:0.75rem;">${esc(r.notas)}</span>` : ''}</td>
+                <td>${esc(mesaLabel(r.mesa))}</td>
+                <td>${esc(r.personas)}</td>
+                <td>${comidaHtml(r)}</td>
                 <td><span class="pill ${r.estado}">${estadoLabel(r.estado)}</span></td>
                 <td>
                   <div class="row-actions">
@@ -177,10 +239,140 @@
       listado.querySelectorAll('.accion').forEach(btn => {
         btn.addEventListener('click', () => cambiarEstado(btn.closest('tr').dataset.id, btn.dataset.estado, fecha));
       });
+      listado.querySelectorAll('.enviar').forEach(btn => {
+        btn.addEventListener('click', () => abrirEnvio(data.find(r => r.id === btn.dataset.id), fecha));
+      });
     } catch (e) {
-      listado.innerHTML = `<p class="msg error">${e.message}</p>`;
+      listado.innerHTML = `<p class="msg error">${esc(e.message)}</p>`;
     }
   }
+
+  // ---------- Avisos de pedidos de comida ----------
+  let vistos = null;
+  let ctxAudio = null;
+
+  function pitido() {
+    try {
+      ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctxAudio.createOscillator();
+      const g = ctxAudio.createGain();
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.15, ctxAudio.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctxAudio.currentTime + 0.35);
+      o.connect(g); g.connect(ctxAudio.destination);
+      o.start(); o.stop(ctxAudio.currentTime + 0.35);
+    } catch (e) {}
+  }
+
+  function mostrarToast(texto) {
+    const t = document.getElementById('toast');
+    t.textContent = texto;
+    t.classList.add('show');
+    clearTimeout(mostrarToast.timer);
+    mostrarToast.timer = setTimeout(() => t.classList.remove('show'), 8000);
+  }
+
+  async function revisarAvisos() {
+    try {
+      const res = await fetch('/api/reservas/list', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: staffPassword, fecha: null })
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const conComida = data.filter(r => r.pedido && r.estado !== 'cancelada' && r.estado !== 'completada');
+      const porEnviar = conComida.filter(r => !r.pedido_enviado_at);
+
+      if (vistos) {
+        const nuevas = conComida.filter(r => !vistos.has(r.id));
+        if (nuevas.length) {
+          const r = nuevas[0];
+          mostrarToast('Nueva reserva con comida: ' + r.nombre + ' (' + r.personas + (r.personas === 1 ? ' persona' : ' personas') + ')' + (nuevas.length > 1 ? ' y ' + (nuevas.length - 1) + ' más' : ''));
+          pitido();
+          cargarReservas(document.getElementById('filtroFecha').value || null);
+        }
+      }
+      vistos = new Set(conComida.map(r => r.id));
+
+      const aviso = document.getElementById('aviso');
+      aviso.classList.toggle('show', porEnviar.length > 0);
+      document.getElementById('avisoTexto').textContent =
+        porEnviar.length + (porEnviar.length === 1 ? ' pedido de comida por enviar' : ' pedidos de comida por enviar') + ' a cafeteria-control';
+      document.title = (porEnviar.length ? '(' + porEnviar.length + ') ' : '') + TITULO;
+    } catch (e) {}
+  }
+
+  function iniciarAvisos() {
+    revisarAvisos();
+    setInterval(revisarAvisos, 30000);
+  }
+
+  document.getElementById('btnVerPedidos').addEventListener('click', () => {
+    document.getElementById('btnTodas').click();
+  });
+
+  // ---------- Enviar el pedido a cafeteria-control ----------
+  const dlg = document.getElementById('dlgEnviar');
+  const dlgMesa = document.getElementById('dlgMesa');
+  const dlgError = document.getElementById('dlgError');
+  const dlgConfirmar = document.getElementById('dlgConfirmar');
+  let envioActual = null;
+
+  async function abrirEnvio(reserva, fecha) {
+    envioActual = { reserva, fecha };
+    dlgError.textContent = '';
+    dlgMesa.innerHTML = '<option>Cargando mesas...</option>';
+    dlgConfirmar.disabled = true;
+    document.getElementById('dlgResumen').textContent =
+      reserva.nombre + ' · ' + reserva.personas + (reserva.personas === 1 ? ' persona' : ' personas') + ' · crea un pedido por persona en la mesa que elijas.';
+    dlg.showModal();
+    try {
+      const res = await fetch('/api/staff/mesas-control', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: staffPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudieron cargar las mesas');
+      if (!data.turno_abierto) throw new Error('No hay un turno abierto en cafeteria-control. Ábrelo primero.');
+      const sugerida = data.mesas.find(m => !m.ocupada && (reserva.mesa === 'vip1' ? m.name === 'VIP 1' : reserva.mesa === 'vip2' ? m.name === 'VIP 2' : !m.is_vip)) || data.mesas.find(m => !m.ocupada);
+      dlgMesa.innerHTML = '';
+      data.mesas.forEach(m => {
+        const o = document.createElement('option');
+        o.value = m.id;
+        o.textContent = m.name + (m.ocupada ? ' (ocupada)' : '');
+        if (sugerida && m.id === sugerida.id) o.selected = true;
+        dlgMesa.appendChild(o);
+      });
+      dlgConfirmar.disabled = false;
+    } catch (e) {
+      dlgMesa.innerHTML = '';
+      dlgError.textContent = e.message;
+    }
+  }
+
+  document.getElementById('dlgCancelar').addEventListener('click', () => dlg.close());
+  dlgConfirmar.addEventListener('click', async () => {
+    dlgConfirmar.disabled = true;
+    dlgError.textContent = '';
+    try {
+      const res = await fetch('/api/reservas/' + encodeURIComponent(envioActual.reserva.id) + '/enviar-control', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: staffPassword, mesa_id: dlgMesa.value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo enviar el pedido');
+      dlg.close();
+      mostrarToast('Pedido enviado a ' + data.mesa + ' en cafeteria-control');
+      cargarReservas(envioActual.fecha);
+      revisarAvisos();
+    } catch (e) {
+      dlgError.textContent = e.message;
+      dlgConfirmar.disabled = false;
+    }
+  });
 
   async function cambiarEstado(id, estado, fecha) {
     try {

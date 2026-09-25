@@ -1,0 +1,22 @@
+{
+  "pociones": [
+    { "id": "p-mo",  "grupo": "Frutales",  "nombre": "Poción morada",   "detalle": "Mora + Frutilla",   "control": "Poción Morada",     "color": "#b98be0", "foto": null },
+    { "id": "p-am",  "grupo": "Frutales",  "nombre": "Poción amarilla", "detalle": "Maracuyá + Mango",  "control": "Poción Amarilla",   "color": "#f3c94a", "foto": null },
+    { "id": "p-lim", "grupo": "Frutales",  "nombre": "Poción azul / roja / verde", "detalle": "Limonada", "control": "Poción de Colores", "color": "#8fbde8", "foto": null,
+      "variantes": [ { "nombre": "azul", "color": "#5f9be0" }, { "nombre": "roja", "color": "#e0605a" }, { "nombre": "verde", "color": "#5fb872" } ] },
+    { "id": "p-am2", "grupo": "Calientes", "nombre": "Americano",       "detalle": "",                  "control": "Americano",         "color": "#d3b48f", "foto": null },
+    { "id": "p-cap", "grupo": "Calientes", "nombre": "Cappuccino",      "detalle": "",                  "control": "Cappuccino",        "color": "#dcc2a2", "foto": null },
+    { "id": "p-lat", "grupo": "Calientes", "nombre": "Latte",           "detalle": "",                  "control": "Latte",             "color": "#e6d2b5", "foto": null },
+    { "id": "p-lf",  "grupo": "Frías",     "nombre": "Latte frío",      "detalle": "",                  "control": "Latte Frío",        "color": "#d9bf9c", "foto": null },
+    { "id": "p-lc",  "grupo": "Frías",     "nombre": "Limonada de café","detalle": "",                  "control": "Limonada de Café",  "color": "#e5cf8a", "foto": null },
+    { "id": "p-vi",  "grupo": "Frías",     "nombre": "Vietnamita",      "detalle": "",                  "control": "Vietnamita",        "color": "#cfae86", "foto": null }
+  ],
+  "botines": [
+    { "id": "b-d",  "grupo": "Bowls",   "nombre": "Bowl de dulce",     "detalle": "", "control": "Bowl Dulce",        "color": "#f0b9a4", "foto": null },
+    { "id": "b-s",  "grupo": "Bowls",   "nombre": "Bowl de sal",       "detalle": "", "control": "Bowl de Sal",       "color": "#bfd8a6", "foto": null },
+    { "id": "b-m",  "grupo": "Bowls",   "nombre": "Bowl mixto",        "detalle": "", "control": "Bowl Mixto",        "color": "#e9cf9a", "foto": null },
+    { "id": "b-3l", "grupo": "Antojos", "nombre": "Dulce 3 leches",    "detalle": "", "control": "Dulce 3 Leches",    "color": "#f3e2bd", "foto": null },
+    { "id": "b-pb", "grupo": "Antojos", "nombre": "Pan de banana",     "detalle": "", "control": "Cake de Banana",    "color": "#e3c07a", "foto": null },
+    { "id": "b-sp", "grupo": "Antojos", "nombre": "Sánduche de pollo", "detalle": "", "control": "Sánduche de Pollo", "color": "#e2b98d", "foto": null }
+  ]
+}

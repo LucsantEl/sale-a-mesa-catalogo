@@ -257,6 +257,67 @@
     color: #333;
   }
   .ticket b { color: var(--brown); }
+
+  .food-box { border: 1px dashed #b9a8d3; border-radius: 10px; padding: 12px; background: #fbf7ee; }
+  .food-hint { margin: 0 0 10px; font-size: 0.82rem; color: #666; }
+  .food-btn, .food-link {
+    font-family: inherit; cursor: pointer;
+  }
+  .food-btn {
+    width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--brown);
+    background: white; color: var(--brown); font-weight: 700; font-size: 0.92rem;
+  }
+  .food-btn:hover { background: var(--cream); }
+  .food-list { list-style: none; margin: 0 0 10px; padding: 0; font-size: 0.85rem; display: grid; gap: 4px; color: #333; }
+  .food-list b { color: var(--brown); }
+  .food-links { display: flex; gap: 14px; }
+  .food-link { background: none; border: none; padding: 0; color: var(--brown); font-size: 0.82rem; font-weight: 700; text-decoration: underline; }
+
+  .menu-screen {
+    position: fixed; inset: 0; z-index: 30; background: var(--cream); color: var(--brown);
+    display: none; flex-direction: column;
+  }
+  .menu-screen.open { display: flex; }
+  .menu-top { background: var(--brown); color: var(--cream); padding: 12px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .menu-top button { background: none; border: none; color: var(--cream); font-size: 0.95rem; font-weight: 700; cursor: pointer; padding: 4px 6px; font-family: inherit; }
+  .menu-top h2 { margin: 0; font-size: 1.1rem; flex: 1; text-align: center; padding-right: 60px; }
+  .menu-scroll { flex: 1; overflow-y: auto; min-height: 0; }
+  .menu-inner { max-width: 760px; margin: 0 auto; padding: 14px 16px 20px; }
+  .menu-banner { text-align: center; margin: 4px 0 12px; }
+  .menu-banner h3 { margin: 0; font-size: 1.5rem; letter-spacing: 0.02em; }
+  .menu-banner p { margin: 4px 0 0; font-size: 0.92rem; }
+  .people { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px; }
+  .people button {
+    flex: 0 0 auto; padding: 7px 14px; border-radius: 999px; border: 2px solid var(--brown);
+    background: white; color: var(--brown); font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit;
+  }
+  .people button[aria-pressed="true"] { background: var(--brown); color: var(--cream); }
+  .people button.done::after { content: " ✓"; }
+  .menu-name { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #ccc; font: inherit; font-size: 0.9rem; margin: 4px 0 8px; }
+  .menu-seg { display: flex; background: #eadfbf; border-radius: 999px; padding: 3px; gap: 3px; margin: 6px 0 4px; position: sticky; top: 0; z-index: 2; }
+  .menu-seg button { flex: 1; border: 0; background: transparent; font: inherit; font-weight: 800; color: var(--brown); padding: 9px 4px; border-radius: 999px; cursor: pointer; }
+  .menu-seg button[aria-pressed="true"] { background: var(--brown); color: var(--cream); }
+  .menu-group { font-size: 1.05rem; font-weight: 800; margin: 16px 0 8px; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .m-item { border: 2px solid #e2d6b8; border-radius: 12px; background: white; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; overflow: hidden; display: block; width: 100%; }
+  .m-item[aria-pressed="true"] { border-color: var(--brown); box-shadow: 0 0 0 2px var(--brown); }
+  .m-img { position: relative; aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; }
+  .m-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .m-img .m-none { width: 30%; opacity: 0.4; }
+  .m-check { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: var(--brown); color: var(--cream); display: none; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; }
+  .m-item[aria-pressed="true"] .m-check { display: flex; }
+  .m-name { padding: 8px 10px 10px; font-weight: 800; font-size: 0.88rem; line-height: 1.25; }
+  .m-name small { display: block; font-weight: 600; font-size: 0.75rem; color: #666; margin-top: 2px; }
+  .m-dots { display: flex; gap: 8px; padding: 0 10px 10px; }
+  .m-dots button { width: 26px; height: 26px; border-radius: 50%; border: 2px solid white; outline: 2px solid transparent; cursor: pointer; padding: 0; }
+  .m-dots button[aria-pressed="true"] { outline-color: var(--brown); }
+  .menu-foot { flex-shrink: 0; border-top: 2px solid #e2d6b8; background: var(--cream); padding: 10px 16px; }
+  .menu-foot-in { max-width: 760px; margin: 0 auto; }
+  .menu-sum { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; font-size: 0.8rem; font-weight: 800; }
+  .menu-sum span { padding: 3px 10px; border-radius: 999px; background: #eadfbf; }
+  .menu-sum span.done { background: var(--brown); color: var(--cream); }
+  .modal-open #cookie-banner { display: none !important; }
+  .menu-error { color: #c0392b; font-size: 0.82rem; text-align: center; min-height: 1.2em; margin: 0 0 6px; }
 </style>
 </head>
 <body>
@@ -318,6 +379,9 @@
       <label for="resNotas">Notas (opcional)</label>
       <textarea id="resNotas" rows="2" placeholder="Alguna aclaración para el staff..."></textarea>
 
+      <label>Tu comida (opcional)</label>
+      <div class="food-box" id="foodBox"></div>
+
       <div class="form-error" id="formError"></div>
     </div>
     <div class="panel-foot">
@@ -335,9 +399,37 @@
       <div><b>Fecha:</b> <span id="tFecha"></span></div>
       <div><b>Hora:</b> <span id="tHora"></span></div>
       <div><b>Personas:</b> <span id="tPersonas"></span></div>
+      <div id="tComidaRow" style="display:none"><b>Comida:</b><ul class="food-list" id="tComida" style="margin:4px 0 0"></ul></div>
     </div>
   </div>
 </aside>
+
+<div class="menu-screen" id="menuScreen" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+  <div class="menu-top">
+    <button type="button" id="menuBack" aria-label="Volver a la reserva">← Volver</button>
+    <h2 id="menuTitle">Menú</h2>
+  </div>
+  <div class="menu-scroll" id="menuScroll">
+    <div class="menu-inner">
+      <div class="menu-banner">
+        <h3>EL JUEGO EMPIEZA AQUÍ</h3>
+        <p>Escoge <b>1 POCIÓN</b> y <b>1 BOTÍN</b> por persona.</p>
+      </div>
+      <div class="people" id="menuPeople"></div>
+      <input class="menu-name" id="menuName" type="text" maxlength="40" placeholder="Nombre de esta persona (opcional)" aria-label="Nombre de esta persona">
+      <div class="menu-seg" role="group" aria-label="Tipo de producto">
+        <button type="button" data-tab="pocion" aria-pressed="true">Pociones</button>
+        <button type="button" data-tab="botin" aria-pressed="false">Botines</button>
+      </div>
+      <div id="menuList"></div>
+    </div>
+  </div>
+  <div class="menu-foot"><div class="menu-foot-in">
+    <div class="menu-sum" id="menuSum"></div>
+    <p class="menu-error" id="menuError" role="alert"></p>
+    <button type="button" class="confirm-btn" id="menuDone">Listo</button>
+  </div></div>
+</div>
 
 <script src="games.js"></script>
 <script>
@@ -461,7 +553,7 @@
     partyHint.textContent = `Esta mesa admite de ${min} a ${max} personas.`;
   }
 
-  resMesa.addEventListener('change', updatePartyBounds);
+  resMesa.addEventListener('change', () => { updatePartyBounds(); renderFoodBox(); });
 
   function openPanel(juego) {
     currentJuego = juego;
@@ -475,16 +567,20 @@
     resNotas.value = '';
     party = 2;
     updatePartyBounds();
+    food.people = [];
+    renderFoodBox();
     formError.textContent = '';
     formView.style.display = 'flex';
     successView.classList.remove('show');
     scrim.classList.add('open');
     panel.classList.add('open');
+    document.documentElement.classList.add('modal-open');
   }
 
   function closePanel() {
     scrim.classList.remove('open');
     panel.classList.remove('open');
+    document.documentElement.classList.remove('modal-open');
   }
 
   grid.addEventListener('click', (e) => {
@@ -499,10 +595,212 @@
   document.getElementById('partyPlus').addEventListener('click', () => {
     party = Math.min(party + 1, MESAS[resMesa.value].max);
     partyCount.textContent = party;
+    renderFoodBox();
   });
   document.getElementById('partyMinus').addEventListener('click', () => {
     party = Math.max(party - 1, MESAS[resMesa.value].min);
     partyCount.textContent = party;
+    renderFoodBox();
+  });
+
+
+  // ---------- Menú de comida (1 poción + 1 botín por persona) ----------
+  const foodBox = document.getElementById('foodBox');
+  const menuScreen = document.getElementById('menuScreen');
+  const menuScroll = document.getElementById('menuScroll');
+  const menuPeople = document.getElementById('menuPeople');
+  const menuName = document.getElementById('menuName');
+  const menuList = document.getElementById('menuList');
+  const menuSum = document.getElementById('menuSum');
+  const menuError = document.getElementById('menuError');
+  const menuDone = document.getElementById('menuDone');
+
+  let MENU = null;
+  const food = { people: [], cur: 0, tab: 'pocion' };
+  const CAMERA = '<svg class="m-none" viewBox="0 0 24 24" fill="none" stroke="#3b1d63" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h4l1.5-2h7L17 8h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+
+  const itemsOf = (t) => MENU[t === 'pocion' ? 'pociones' : 'botines'];
+  const findItem = (t, id) => itemsOf(t).find(i => i.id === id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+
+  function newPerson() { return { nombre: '', pocion: null, botin: null, variante: null }; }
+  function syncPeople() {
+    while (food.people.length < party) food.people.push(newPerson());
+  }
+  function personDone(p) {
+    if (!p.pocion || !p.botin) return false;
+    const pocion = findItem('pocion', p.pocion);
+    return !pocion.variantes || p.variante !== null;
+  }
+  // Solo cuentan las primeras `party` personas; si bajan el número y luego lo suben, no se pierde lo elegido.
+  const active = () => food.people.slice(0, party);
+  const anyFood = () => active().some(p => p.pocion || p.botin);
+  const allDone = () => active().length === party && active().every(personDone);
+  const personLabel = (p, i) => 'Persona ' + (i + 1) + (p.nombre ? ' (' + p.nombre + ')' : '');
+  function pocionText(p) {
+    const it = findItem('pocion', p.pocion);
+    return it.variantes && p.variante !== null ? 'Poción ' + it.variantes[p.variante].nombre + ' (limonada)' : it.nombre;
+  }
+
+  function renderFoodBox() {
+    foodBox.textContent = '';
+    if (!anyFood()) {
+      foodBox.appendChild(el('p', 'food-hint', 'Escoge 1 poción y 1 botín por persona y el equipo los tendrá listos.'));
+      const b = el('button', 'food-btn', 'Elegir comida');
+      b.type = 'button';
+      b.addEventListener('click', openMenu);
+      foodBox.appendChild(b);
+      return;
+    }
+    syncPeople();
+    const ul = el('ul', 'food-list');
+    active().forEach((p, i) => {
+      const li = el('li');
+      li.appendChild(el('b', '', personLabel(p, i) + ': '));
+      li.appendChild(document.createTextNode(personDone(p) ? pocionText(p) + ' + ' + findItem('botin', p.botin).nombre : 'sin completar'));
+      ul.appendChild(li);
+    });
+    foodBox.appendChild(ul);
+    const links = el('div', 'food-links');
+    const change = el('button', 'food-link', 'Cambiar'); change.type = 'button'; change.addEventListener('click', openMenu);
+    const clear = el('button', 'food-link', 'Quitar comida'); clear.type = 'button';
+    clear.addEventListener('click', () => { food.people = []; renderFoodBox(); });
+    links.append(change, clear);
+    foodBox.appendChild(links);
+  }
+
+  function renderMenu() {
+    const p = food.people[food.cur];
+
+    menuPeople.textContent = '';
+    menuPeople.style.display = party > 1 ? 'flex' : 'none';
+    active().forEach((q, i) => {
+      const b = el('button', personDone(q) ? 'done' : '', 'Persona ' + (i + 1));
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(i === food.cur));
+      b.addEventListener('click', () => { food.cur = i; food.tab = 'pocion'; renderMenu(); menuScroll.scrollTop = 0; });
+      menuPeople.appendChild(b);
+    });
+    menuName.value = p.nombre;
+
+    menuScreen.querySelectorAll('.menu-seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === food.tab)));
+
+    menuList.textContent = '';
+    let grupo = '', grid = null;
+    itemsOf(food.tab).forEach(item => {
+      if (item.grupo !== grupo) {
+        grupo = item.grupo;
+        menuList.appendChild(el('div', 'menu-group', grupo));
+        grid = el('div', 'menu-grid');
+        menuList.appendChild(grid);
+      }
+      const selected = p[food.tab] === item.id;
+      const wrap = el('div');
+      const btn = el('button', 'm-item');
+      btn.type = 'button';
+      btn.dataset.id = item.id;
+      btn.setAttribute('aria-pressed', String(selected));
+      const img = el('div', 'm-img');
+      img.style.background = item.color;
+      if (item.foto) {
+        const im = document.createElement('img');
+        im.src = item.foto; im.alt = ''; im.loading = 'lazy';
+        im.addEventListener('error', () => im.remove());
+        img.appendChild(im);
+      } else {
+        img.insertAdjacentHTML('beforeend', CAMERA);
+      }
+      img.appendChild(el('span', 'm-check', '✓'));
+      const nm = el('div', 'm-name', item.nombre);
+      if (item.detalle) nm.appendChild(el('small', '', item.detalle));
+      btn.append(img, nm);
+      wrap.appendChild(btn);
+      if (selected && item.variantes) {
+        const dots = el('div', 'm-dots');
+        item.variantes.forEach((v, vi) => {
+          const d = el('button');
+          d.type = 'button';
+          d.style.background = v.color;
+          d.setAttribute('aria-label', 'Limonada ' + v.nombre);
+          d.setAttribute('aria-pressed', String(p.variante === vi));
+          d.addEventListener('click', () => { p.variante = vi; afterPick(); });
+          dots.appendChild(d);
+        });
+        wrap.appendChild(dots);
+      }
+      grid.appendChild(wrap);
+    });
+
+    menuSum.textContent = '';
+    menuSum.append(
+      el('span', p.pocion ? 'done' : '', p.pocion ? '✓ ' + pocionText(p) : 'Poción 0/1'),
+      el('span', p.botin ? 'done' : '', p.botin ? '✓ ' + findItem('botin', p.botin).nombre : 'Botín 0/1')
+    );
+    menuError.textContent = '';
+    menuDone.textContent = allDone() ? 'Listo, volver a la reserva' : 'Listo';
+  }
+
+  // Tras cada elección: pasa a lo que falte (botín, o la siguiente persona).
+  function afterPick() {
+    const p = food.people[food.cur];
+    if (personDone(p)) {
+      const next = active().findIndex(q => !personDone(q));
+      if (next !== -1) { food.cur = next; food.tab = 'pocion'; renderMenu(); menuScroll.scrollTop = 0; return; }
+    } else if (food.tab === 'pocion' && p.pocion && !(findItem('pocion', p.pocion).variantes && p.variante === null)) {
+      food.tab = 'botin'; renderMenu(); menuScroll.scrollTop = 0; return;
+    }
+    renderMenu();
+  }
+
+  async function openMenu() {
+    if (!MENU) {
+      try {
+        const r = await fetch('/api/menu');
+        if (!r.ok) throw new Error();
+        MENU = await r.json();
+      } catch (e) {
+        formError.textContent = 'El menú no está disponible ahora. Puedes reservar sin comida.';
+        return;
+      }
+    }
+    syncPeople();
+    const first = active().findIndex(q => !personDone(q));
+    food.cur = first === -1 ? 0 : first;
+    food.tab = 'pocion';
+    renderMenu();
+    menuScreen.classList.add('open');
+    menuScroll.scrollTop = 0;
+    document.getElementById('menuBack').focus();
+  }
+
+  function closeMenu() {
+    menuScreen.classList.remove('open');
+    renderFoodBox();
+  }
+
+  menuList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.m-item');
+    if (!btn) return;
+    const p = food.people[food.cur];
+    const t = food.tab;
+    if (p[t] === btn.dataset.id) { p[t] = null; if (t === 'pocion') p.variante = null; renderMenu(); return; }
+    p[t] = btn.dataset.id;
+    if (t === 'pocion') p.variante = null;
+    afterPick();
+  });
+  menuScreen.querySelectorAll('.menu-seg button').forEach(b => b.addEventListener('click', () => { food.tab = b.dataset.tab; renderMenu(); menuScroll.scrollTop = 0; }));
+  menuName.addEventListener('input', () => { food.people[food.cur].nombre = menuName.value; });
+  document.getElementById('menuBack').addEventListener('click', closeMenu);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuScreen.classList.contains('open')) closeMenu(); });
+  menuDone.addEventListener('click', () => {
+    const missing = active().findIndex(q => !personDone(q));
+    if (missing !== -1) {
+      food.cur = missing; renderMenu();
+      const q = food.people[missing];
+      menuError.textContent = 'Falta ' + (!q.pocion ? 'la poción' : !q.botin ? 'el botín' : 'el color de la limonada') + ' de Persona ' + (missing + 1) + '.';
+      return;
+    }
+    closeMenu();
   });
 
   confirmBtn.addEventListener('click', async () => {
@@ -511,6 +809,16 @@
     if (!resFecha.value || !resHora.value || !resNombre.value.trim() || !resCelular.value.trim()) {
       formError.textContent = 'Completa fecha, hora, nombre y celular.';
       return;
+    }
+
+    let pedido = null;
+    if (anyFood()) {
+      syncPeople();
+      if (!allDone()) {
+        formError.textContent = 'Completa la poción y el botín de cada persona, o quita la comida.';
+        return;
+      }
+      pedido = active().map(p => ({ nombre: p.nombre.trim(), pocion: p.pocion, botin: p.botin, variante: p.variante }));
     }
 
     confirmBtn.disabled = true;
@@ -528,7 +836,8 @@
           fecha: resFecha.value,
           hora: resHora.value,
           personas: party,
-          notas: resNotas.value.trim() || null
+          notas: resNotas.value.trim() || null,
+          pedido
         })
       });
       const data = await res.json();
@@ -539,6 +848,16 @@
       document.getElementById('tFecha').textContent = resFecha.value;
       document.getElementById('tHora').textContent = resHora.value;
       document.getElementById('tPersonas').textContent = party + (party === 1 ? ' persona' : ' personas');
+      const comidaList = document.getElementById('tComida');
+      comidaList.textContent = '';
+      if (pedido) {
+        active().forEach((p, i) => {
+          const li = document.createElement('li');
+          li.textContent = personLabel(p, i) + ': ' + pocionText(p) + ' + ' + findItem('botin', p.botin).nombre;
+          comidaList.appendChild(li);
+        });
+      }
+      document.getElementById('tComidaRow').style.display = pedido ? 'block' : 'none';
       formView.style.display = 'none';
       successView.classList.add('show');
     } catch (err) {
