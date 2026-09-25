@@ -293,6 +293,8 @@
   }
   .people button[aria-pressed="true"] { background: var(--brown); color: var(--cream); }
   .people button.done::after { content: " ✓"; }
+  .people button.add { border-style: dashed; background: transparent; }
+  .people-note { font-size: 0.78rem; color: #666; margin: 0 0 6px; }
   .menu-name { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #ccc; font: inherit; font-size: 0.9rem; margin: 4px 0 8px; }
   .menu-seg { display: flex; background: #eadfbf; border-radius: 999px; padding: 3px; gap: 3px; margin: 6px 0 4px; position: sticky; top: 0; z-index: 2; }
   .menu-seg button { flex: 1; border: 0; background: transparent; font: inherit; font-weight: 800; color: var(--brown); padding: 9px 4px; border-radius: 999px; cursor: pointer; }
@@ -416,6 +418,7 @@
         <p>Escoge <b>1 POCIÓN</b> y <b>1 BOTÍN</b> por persona.</p>
       </div>
       <div class="people" id="menuPeople"></div>
+      <p class="people-note" id="menuPeopleNote"></p>
       <input class="menu-name" id="menuName" type="text" maxlength="40" placeholder="Nombre de esta persona (opcional)" aria-label="Nombre de esta persona">
       <div class="menu-seg" role="group" aria-label="Tipo de producto">
         <button type="button" data-tab="pocion" aria-pressed="true">Pociones</button>
@@ -609,6 +612,7 @@
   const menuScreen = document.getElementById('menuScreen');
   const menuScroll = document.getElementById('menuScroll');
   const menuPeople = document.getElementById('menuPeople');
+  const menuPeopleNote = document.getElementById('menuPeopleNote');
   const menuName = document.getElementById('menuName');
   const menuList = document.getElementById('menuList');
   const menuSum = document.getElementById('menuSum');
@@ -669,11 +673,25 @@
     foodBox.appendChild(links);
   }
 
+  // Tope de personas: 12, o menos si la mesa elegida admite menos.
+  const maxParty = () => Math.min(12, MESAS[resMesa.value].max);
+
+  function addPerson() {
+    if (party >= maxParty()) return;
+    party += 1;
+    partyCount.textContent = party;
+    syncPeople();
+    food.cur = party - 1;
+    food.tab = 'pocion';
+    renderMenu();
+    menuScroll.scrollTop = 0;
+    menuPeople.scrollLeft = menuPeople.scrollWidth;
+  }
+
   function renderMenu() {
     const p = food.people[food.cur];
 
     menuPeople.textContent = '';
-    menuPeople.style.display = party > 1 ? 'flex' : 'none';
     active().forEach((q, i) => {
       const b = el('button', personDone(q) ? 'done' : '', 'Persona ' + (i + 1));
       b.type = 'button';
@@ -681,6 +699,13 @@
       b.addEventListener('click', () => { food.cur = i; food.tab = 'pocion'; renderMenu(); menuScroll.scrollTop = 0; });
       menuPeople.appendChild(b);
     });
+    if (party < maxParty()) {
+      const add = el('button', 'add', '+ Agregar persona');
+      add.type = 'button';
+      add.addEventListener('click', addPerson);
+      menuPeople.appendChild(add);
+    }
+    menuPeopleNote.textContent = party >= maxParty() ? 'Máximo ' + maxParty() + ' personas para esta mesa.' : '';
     menuName.value = p.nombre;
 
     menuScreen.querySelectorAll('.menu-seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === food.tab)));
