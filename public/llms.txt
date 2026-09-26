@@ -1,0 +1,24 @@
+# Sale a Mesa
+
+> Café de especialidad y juegos de mesa en Urdesa, Guayaquil, Ecuador. Catálogo de juegos, menú de pociones y botines, y reservas de mesa online.
+
+## Datos del negocio
+
+- Nombre: Sale a Mesa (Juegos y Café)
+- Dirección: Mirtos e Higueras, Urdesa, Guayaquil, Ecuador
+- WhatsApp: +593 96 277 2734 (https://wa.me/593962772734)
+- Instagram: https://www.instagram.com/saleamesa.ec/
+- Horarios: miércoles, jueves y domingo de 3:00 pm a 9:00 pm; viernes y sábado de 3:00 pm a 10:00 pm. Lunes y martes cerrado.
+- Zona horaria: America/Guayaquil (UTC-5)
+
+## Qué ofrece
+
+- Más de 100 juegos de mesa para jugar en el local, con ficha de cada juego (jugadores, duración, dificultad y reseña).
+- Menú: cada persona escoge 1 poción (bebida) y 1 botín (bowl o antojo).
+- Reservas online de mesa: general, VIP 1 (6 a 10 personas) y VIP 2 (2 a 4 personas).
+
+## Enlaces
+
+- [Catálogo de juegos y reservas](https://sale-a-mesa-catalogo.vercel.app/)
+- [Política de privacidad](https://sale-a-mesa-catalogo.vercel.app/privacidad)
+- [Términos y condiciones](https://sale-a-mesa-catalogo.vercel.app/terminos)

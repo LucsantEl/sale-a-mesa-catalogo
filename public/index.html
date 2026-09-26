@@ -5,11 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="/logo.png">
 <title>Sale a Mesa — Catálogo de Juegos</title>
-<meta name="description" content="Explora el catálogo de juegos de mesa de Sale a Mesa y reservá tu mesa online: elegí el juego, la fecha y la hora.">
+<meta name="description" content="Sale a Mesa: café de especialidad y juegos de mesa en Urdesa, Guayaquil. Mira el catálogo de juegos, escoge tu poción y tu botín, y reserva tu mesa online.">
+<link rel="canonical" href="https://sale-a-mesa-catalogo.vercel.app/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sale a Mesa — Juegos y café en Urdesa, Guayaquil">
+<meta name="twitter:description" content="Catálogo de juegos de mesa, menú y reservas online.">
+<meta name="twitter:image" content="https://sale-a-mesa-catalogo.vercel.app/logo.png">
 <meta property="og:title" content="Sale a Mesa — Catálogo de Juegos">
 <meta property="og:description" content="Explora el catálogo de juegos de mesa de Sale a Mesa y reservá tu mesa online.">
 <meta property="og:image" content="https://sale-a-mesa-catalogo.vercel.app/logo.png">
 <meta property="og:type" content="website">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CafeOrCoffeeShop",
+  "name": "Sale a Mesa",
+  "alternateName": "Sale a Mesa Juegos y Café",
+  "description": "Cafetería de especialidad y juegos de mesa en Urdesa, Guayaquil. Catálogo de juegos, menú de pociones y botines, y reservas de mesa online.",
+  "url": "https://sale-a-mesa-catalogo.vercel.app/",
+  "image": "https://sale-a-mesa-catalogo.vercel.app/logo.png",
+  "logo": "https://sale-a-mesa-catalogo.vercel.app/logo.png",
+  "telephone": "+593962772734",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Mirtos e Higueras, Urdesa",
+    "addressLocality": "Guayaquil",
+    "addressRegion": "Guayas",
+    "addressCountry": "EC"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Wednesday",
+        "Thursday",
+        "Sunday"
+      ],
+      "opens": "15:00",
+      "closes": "21:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "15:00",
+      "closes": "22:00"
+    }
+  ],
+  "sameAs": [
+    "https://www.instagram.com/saleamesa.ec/"
+  ],
+  "keywords": "juegos de mesa, café, cafetería, Guayaquil, Urdesa, reservas",
+  "potentialAction": {
+    "@type": "ReserveAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://sale-a-mesa-catalogo.vercel.app/",
+      "actionPlatform": [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform"
+      ]
+    },
+    "result": {
+      "@type": "Reservation",
+      "name": "Reserva de mesa y juego"
+    }
+  }
+}
+</script>
 <style>
   :root {
     --brown: #5b2d8e;
@@ -319,6 +384,17 @@
   .menu-sum span { padding: 3px 10px; border-radius: 999px; background: #eadfbf; }
   .menu-sum span.done { background: var(--brown); color: var(--cream); }
   .modal-open #cookie-banner { display: none !important; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .visit { max-width: 900px; margin: 0 auto 32px; padding: 0 16px; }
+  .visit-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px 28px; }
+  .visit h2 { margin: 0 0 8px; font-size: 1.15rem; color: var(--brown); }
+  .visit p { margin: 0 0 8px; font-size: 0.92rem; color: #333; line-height: 1.45; }
+  .visit a { color: var(--brown); font-weight: 700; }
+  .hours { width: 100%; border-collapse: collapse; font-size: 0.9rem; color: #333; }
+  .hours th { text-align: left; font-weight: 600; padding: 4px 12px 4px 0; }
+  .hours td { padding: 4px 0; }
+  .hours tr.today { color: var(--brown); font-weight: 800; }
+  .open-now { display: inline-block; font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; margin-bottom: 8px; background: #eadfbf; color: var(--brown); }
   .menu-error { color: #c0392b; font-size: 0.82rem; text-align: center; min-height: 1.2em; margin: 0 0 6px; }
 </style>
 </head>
@@ -326,6 +402,7 @@
 
 <header>
   <img src="logo.png" alt="Sale a Mesa" class="logo">
+  <h1 class="sr-only">Sale a Mesa — café y juegos de mesa en Urdesa, Guayaquil</h1>
   <p>Catálogo de juegos de mesa</p>
 </header>
 
@@ -339,6 +416,31 @@
 <div class="grid" id="grid"></div>
 <div class="empty" id="empty" style="display:none;">No se encontraron juegos.</div>
 <div class="pagination" id="pagination"></div>
+
+<section class="visit" id="visitanos" aria-labelledby="visitTitle">
+  <div class="visit-card">
+    <div>
+      <h2 id="visitTitle">Visítanos</h2>
+      <p><b>Sale a Mesa</b> — café de especialidad y juegos de mesa.</p>
+      <p>Mirtos e Higueras, Urdesa<br>Guayaquil, Ecuador</p>
+      <p><a href="https://www.google.com/maps/search/?api=1&amp;query=Sale%20a%20Mesa%20Mirtos%20e%20Higueras%20Urdesa%20Guayaquil" target="_blank" rel="noopener">Cómo llegar</a></p>
+      <p>Escríbenos por WhatsApp: <a href="https://wa.me/593962772734" target="_blank" rel="noopener">+593 96 277 2734</a></p>
+    </div>
+    <div>
+      <h2>Horarios</h2>
+      <div class="open-now" id="openNow" aria-live="polite"></div>
+      <table class="hours" id="hours">
+        <tr data-day="1"><th scope="row">Lunes</th><td>Cerrado</td></tr>
+        <tr data-day="2"><th scope="row">Martes</th><td>Cerrado</td></tr>
+        <tr data-day="3"><th scope="row">Miércoles</th><td>3:00 pm – 9:00 pm</td></tr>
+        <tr data-day="4"><th scope="row">Jueves</th><td>3:00 pm – 9:00 pm</td></tr>
+        <tr data-day="5"><th scope="row">Viernes</th><td>3:00 pm – 10:00 pm</td></tr>
+        <tr data-day="6"><th scope="row">Sábado</th><td>3:00 pm – 10:00 pm</td></tr>
+        <tr data-day="0"><th scope="row">Domingo</th><td>3:00 pm – 9:00 pm</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
 
 <footer>Sale a Mesa · Cafetería de especialidad y juegos de mesa · <a href="/privacidad">Política de Privacidad</a> · <a href="/terminos">Términos y Condiciones</a></footer>
 
@@ -519,6 +621,23 @@
   searchInput.addEventListener('input', () => { currentPage = 1; render(); });
   categoriaSelect.addEventListener('change', () => { currentPage = 1; render(); });
   render();
+
+  // ---------- Horario: hoy y "abierto ahora" (hora de Guayaquil) ----------
+  (function () {
+    const HORARIO = { 0: [15, 21], 3: [15, 21], 4: [15, 21], 5: [15, 22], 6: [15, 22] };
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Guayaquil', weekday: 'short', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date());
+    const get = (t) => parts.find(p => p.type === t).value;
+    const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+    const minutes = Number(get('hour')) * 60 + Number(get('minute'));
+    const row = document.querySelector('#hours tr[data-day="' + day + '"]');
+    if (row) row.classList.add('today');
+    const h = HORARIO[day];
+    const label = document.getElementById('openNow');
+    const fmt = (hr) => (hr > 12 ? hr - 12 : hr) + ':00 ' + (hr >= 12 ? 'pm' : 'am');
+    if (h && minutes >= h[0] * 60 && minutes < h[1] * 60) label.textContent = 'Abierto ahora · cerramos a las ' + fmt(h[1]);
+    else if (h && minutes < h[0] * 60) label.textContent = 'Hoy abrimos a las ' + fmt(h[0]);
+    else label.textContent = 'Cerrado ahora';
+  })();
 
   // ---------- Reservas ----------
   const scrim = document.getElementById('scrim');
